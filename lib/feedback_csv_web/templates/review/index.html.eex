@@ -1,1 +1,17 @@
-<h2>Reviews:</h2>
+<h1 class=text-center>Reviews:</h1>
+
+<div class="container">
+    <%= for review <- @reviews do %>
+        <div class="row ">
+            <div class="col-xs-6 mx-auto">
+                <div class="card mb-5 mt-5 text-center" style="width: 50rem;">
+                    <div class="card-body">
+                        <h1 class="card-title">Author: <%= review.author.name %></h2>
+                        <h4 class="card-subtitle"><%= review.city %> </h5>
+                        <h2 class="card-body"><%= review.body %></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% end %>
+</div>
