@@ -18,6 +18,7 @@ defmodule FeedbackCsvWeb.Router do
 
     get "/", PageController, :index
     get "/reviews", ReviewController, :index
+    post "/reviews", ReviewController, :create
   end
 
   # Other scopes may use custom stacks.
