@@ -13,8 +13,6 @@ defmodule FeedbackCsv.Reviews do
     filename
     |> load_csv
     |> to_db
-
-    :ok
   end
 
   # Читает и парсит .csv файл
@@ -47,7 +45,12 @@ defmodule FeedbackCsv.Reviews do
 
   # Готовим данные для загрузки в БД
   defp to_db(data) do
-    Enum.map(data, &get_author_and_review/1)
+    try do
+      Enum.map(data, &get_author_and_review/1)
+      :ok
+    rescue
+      e in FunctionClauseError -> :error
+    end
   end
 
   # Получаем структуры Отзыва и Автора

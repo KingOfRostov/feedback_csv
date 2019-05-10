@@ -25,13 +25,17 @@ defmodule FeedbackCsvWeb.ReviewController do
       File.cp(upload.path, formated_name)
 
       # Загружаем данные из csv файла в БД, а затем удаляем файл
-      Reviews.csv_to_db(formated_name)
+      status = Reviews.csv_to_db(formated_name)
       File.rm(formated_name)
 
       reviews = FeedbackCsv.Reviews.list_review()
       changeset = Review.changeset(%Review{}, %{})
 
-      put_flash(conn, :info, "Данные успешно загружены")
+      if status == :ok do
+        put_flash(conn, :info, "Данные успешно загружены")
+      else
+        put_flash(conn, :error, "Некорректная структура csv файла")
+      end
       |> render("index.html", %{reviews: reviews, changeset: changeset})
     else
       reviews = FeedbackCsv.Reviews.list_review()
