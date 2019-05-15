@@ -13,7 +13,7 @@ defmodule FeedbackCsvWeb.ReviewsTest do
   def create_review(attrs \\ %{}) do
     changeset = Reviews.Review.changeset(%Reviews.Review{}, attrs)
     {:ok, review} = Repo.insert(changeset)
-    review = Repo.preload(review, :author)
+    Repo.preload(review, :author)
   end
 
   test "list_review/0 returns all reviews" do

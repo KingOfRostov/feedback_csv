@@ -3,7 +3,9 @@ defmodule FeedbackCsvWeb.ReviewController do
 
   alias FeedbackCsv.Reviews.Review
   alias FeedbackCsv.Reviews
-  alias FeedbackCsv.CsvLoader
+  alias FeedbackCsv.Repo
+
+  import Ecto.Query, only: [from: 2]
 
   def index(conn, _params) do
     reviews = Reviews.list_review()
@@ -17,6 +19,7 @@ defmodule FeedbackCsvWeb.ReviewController do
     extension = Path.extname(upload.filename)
 
     changeset = Review.changeset(%Review{}, %{})
+    reviews = Reviews.list_review()
 
     # Если загружен .csv файл - добавляем в ./media, иначе не добавляем 
     if(extension == ".csv") do
@@ -28,20 +31,21 @@ defmodule FeedbackCsvWeb.ReviewController do
       File.cp(upload.path, formated_name)
 
       # Загружаем данные из csv файла в БД, а затем удаляем файл
-      status = CsvLoader.csv_to_db(formated_name)
-      File.rm(formated_name)
+      case Reviews.prepare_csv_to_db(formated_name) do
+        {:ok, data} ->
+          Reviews.csv_to_db(data)
+          reviews = Reviews.list_review()
 
-      reviews = Reviews.list_review()
+          put_flash(conn, :info, "Данные успешно загружены")
+          |> render("index.html", %{reviews: reviews, changeset: changeset})
 
-      if status == :ok do
-        put_flash(conn, :info, "Данные успешно загружены")
-      else
-        put_flash(conn, :error, "Некорректная структура csv файла")
+        :error ->
+          put_flash(conn, :error, "Некорректная структура csv файла")
+          |> render("index.html", %{reviews: reviews, changeset: changeset})
       end
-      |> render("index.html", %{reviews: reviews, changeset: changeset})
-    else
-      reviews = Reviews.list_review()
 
+      File.rm(formated_name)
+    else
       put_flash(conn, :error, "Принимаются только .csv файлы")
       |> render("index.html", %{reviews: reviews, changeset: changeset})
     end
@@ -61,8 +65,10 @@ defmodule FeedbackCsvWeb.ReviewController do
     reviews = Reviews.list_review()
     show_form = review_params["show_form"]
 
+    query = Repo.all(from r in Review, where: r.city == "Ростов-на-Дону", select: r.body)
+
     if show_form == "HTML-страница" or show_form == "---Форма отчета---" do
-      render(conn, "show.html", %{reviews: reviews, sort_param: sort_param})
+      render(conn, "show.html", %{reviews: reviews, sort_param: sort_param, query: query})
     else
       render(conn, "excel.html")
     end

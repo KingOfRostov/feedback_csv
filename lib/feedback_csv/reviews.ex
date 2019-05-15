@@ -3,9 +3,12 @@ defmodule FeedbackCsv.Reviews do
 
   alias FeedbackCsv.Repo
   alias FeedbackCsv.Reviews.Review
+  alias FeedbackCsv.CsvLoader
+  alias FeedbackCsv.ReviewQueries
 
-  # Список всех отзывов в базе
-  def list_review do
-    Repo.all(Review) |> Repo.preload(:author)
-  end
+  def list_review(), do: ReviewQueries.list_review()
+
+  def prepare_csv_to_db(filename), do: CsvLoader.prepare_csv_to_db(filename)
+
+  def csv_to_db(data), do: ReviewQueries.csv_to_db(data)
 end

@@ -1,13 +1,9 @@
 defmodule FeedbackCsv.CsvLoader do
-  alias FeedbackCsv.Repo
-  alias FeedbackCsv.Reviews.Review
-  alias FeedbackCsv.Reviews.Author
-
   # Загружает данные из .csv файла в БД
-  def csv_to_db(filename) do
+  def prepare_csv_to_db(filename) do
     filename
     |> load_csv
-    |> to_db
+    |> prepare_to_db
   end
 
   # Читает и парсит .csv файл
@@ -39,10 +35,9 @@ defmodule FeedbackCsv.CsvLoader do
   end
 
   # Готовим данные для загрузки в БД
-  defp to_db(data) do
+  defp prepare_to_db(data) do
     try do
-      Enum.map(data, &get_author_and_review/1)
-      :ok
+      IO.inspect({:ok, Enum.map(data, &get_author_and_review/1)})
     rescue
       e in FunctionClauseError -> :error
     end
@@ -51,13 +46,8 @@ defmodule FeedbackCsv.CsvLoader do
   # Получаем структуры Отзыва и Автора
   defp get_author_and_review(map) do
     author_map = get_author(map)
-    author_changeset = Author.changeset(%Author{}, author_map)
     review_map = get_review(map)
-    author = Repo.insert(author_changeset)
-    author_id = Kernel.elem(author, 1).id
-    review_map = Map.merge(review_map, %{author_id: author_id})
-    review_changeset = Review.changeset(%Review{}, review_map)
-    Repo.insert(review_changeset)
+    %{author: author_map, review: review_map}
   end
 
   # Получаем поля Отзыва
