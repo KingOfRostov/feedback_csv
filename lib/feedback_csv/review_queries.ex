@@ -17,20 +17,10 @@ defmodule FeedbackCsv.ReviewQueries do
   defp put_author_and_review(map) do
     author_map = map.author
     review_map = map.review
-    author = create_author(author_map)
-    author_id = Kernel.elem(author, 1).id
 
-    review_map = Map.merge(review_map, %{author_id: author_id})
+    review_map = Map.merge(review_map, %{author: author_map})
     create_review(review_map)
   end
-
-  defp create_author(attrs) do
-    %Author{}
-    |> change_author(attrs)
-    |> Repo.insert()
-  end
-
-  defp change_author(author, attrs), do: Author.changeset(author, attrs)
 
   defp create_review(attrs) do
     %Review{}
