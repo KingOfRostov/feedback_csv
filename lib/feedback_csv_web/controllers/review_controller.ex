@@ -9,7 +9,7 @@ defmodule FeedbackCsvWeb.ReviewController do
 
   def index(conn, _params) do
     reviews = Reviews.list_review()
-    changeset = Review.changeset(%Review{}, %{})
+    changeset = Reviews.change_review()
     render(conn, "index.html", %{reviews: reviews, changeset: changeset})
   end
 
@@ -18,7 +18,7 @@ defmodule FeedbackCsvWeb.ReviewController do
     upload = review_params["csv"]
     extension = Path.extname(upload.filename)
 
-    changeset = Review.changeset(%Review{}, %{})
+    changeset = Reviews.change_review()
     reviews = Reviews.list_review()
 
     # Если загружен .csv файл - добавляем в ./media, иначе не добавляем 
@@ -31,9 +31,8 @@ defmodule FeedbackCsvWeb.ReviewController do
       File.cp(upload.path, formated_name)
 
       # Загружаем данные из csv файла в БД, а затем удаляем файл
-      case Reviews.prepare_csv_to_db(formated_name) do
-        {:ok, data} ->
-          Reviews.csv_to_db(data)
+      case Reviews.load_from_csv(formated_name) do
+        :ok ->
           reviews = Reviews.list_review()
 
           put_flash(conn, :info, "Данные успешно загружены")
@@ -54,7 +53,7 @@ defmodule FeedbackCsvWeb.ReviewController do
   # Если не выбран файл
   def create(conn, _params) do
     reviews = Reviews.list_review()
-    changeset = Review.changeset(%Review{}, %{})
+    changeset = Reviews.change_review()
 
     put_flash(conn, :error, "Выберите файл")
     |> render("index.html", %{reviews: reviews, changeset: changeset})

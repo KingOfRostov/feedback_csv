@@ -1,19 +1,46 @@
 defmodule FeedbackCsvWeb.ReviewsTest do
   use FeedbackCsv.DataCase
 
-  alias FeedbackCsv.Repo
   alias FeedbackCsv.Reviews
+  alias FeedbackCsv.Reviews.Review
 
-  def create_review(attrs \\ %{}) do
-    changeset = Reviews.Review.changeset(%Reviews.Review{}, attrs)
-    {:ok, review} = Repo.insert(changeset)
-    Repo.preload(review, :author)
+  @valid_attrs %{body: "Cool!", city: "New-York", author: %{name: "Steve", sex: "Male"}}
+  @invalid_attrs %{body: "Cool!", city: "New-York", author: %{name: "Steve"}}
+
+  test "change_review/2 returns can't be blank" do
+    changeset = Reviews.change_review(%Review{}, @invalid_attrs)
+
+    assert %{author: %{sex: ["can't be blank"]}} ==
+             errors_on(changeset)
   end
 
-  test "list_review/0 returns all reviews" do
-    author = %{name: "Steve", sex: "Male"}
-    review = create_review(%{body: "Cool!", city: "New-York", author: author})
+  test "change_review/2 returns valid changeset" do
+    changeset = Reviews.change_review(%Review{}, @valid_attrs)
+    assert changeset.valid?
+  end
 
+  test "change_review/0 returns invalid changeset" do
+    refute Reviews.change_review().valid?
+  end
+
+  test "create_review/1 with valid data creates a review" do
+    assert {:ok, review} = Reviews.create_review(@valid_attrs)
+    assert review.body == "Cool!"
+    assert review.city == "New-York"
+    assert review.author.name == "Steve"
+    assert review.author.sex == "Male"
+  end
+
+  test "create_review/1 with invalid data returns error changeset" do
+    assert {:error, %Ecto.Changeset{}} = Reviews.create_review(@invalid_attrs)
+  end
+
+  test "list_review/0 returns empty list" do
+    assert Reviews.list_review() == []
+  end
+
+  test "list_review/0 returns all reviews when" do
+    {:ok, review} = Reviews.create_review(@valid_attrs)
     assert Reviews.list_review() == [review]
   end
 end

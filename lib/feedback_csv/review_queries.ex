@@ -1,7 +1,6 @@
 defmodule FeedbackCsv.ReviewQueries do
   alias FeedbackCsv.Repo
   alias FeedbackCsv.Reviews.Review
-  alias FeedbackCsv.Reviews.Author
 
   # Загружает данные из .csv файла в БД
   def csv_to_db(map) do
@@ -10,7 +9,9 @@ defmodule FeedbackCsv.ReviewQueries do
 
   # Список всех отзывов в базе
   def list_review do
-    Repo.all(Review) |> Repo.preload(:author)
+    Review
+    |> Repo.all()
+    |> Repo.preload(:author)
   end
 
   # Получаем структуры Отзыва и Автора
@@ -22,11 +23,11 @@ defmodule FeedbackCsv.ReviewQueries do
     create_review(review_map)
   end
 
-  defp create_review(attrs) do
+  def create_review(attrs) do
     %Review{}
     |> change_review(attrs)
     |> Repo.insert()
   end
 
-  defp change_review(review, attrs), do: Review.changeset(review, attrs)
+  def change_review(review \\ %Review{}, attrs \\ %{}), do: Review.changeset(review, attrs)
 end

@@ -1,14 +1,28 @@
 defmodule FeedbackCsv.Reviews do
-  import Ecto.Query
-
-  alias FeedbackCsv.Repo
-  alias FeedbackCsv.Reviews.Review
   alias FeedbackCsv.CsvLoader
   alias FeedbackCsv.ReviewQueries
 
   def list_review(), do: ReviewQueries.list_review()
 
-  def prepare_csv_to_db(filename), do: CsvLoader.prepare_csv_to_db(filename)
+  def load_from_csv(filename) do
+    case prepare_csv_to_db(filename) do
+      {:ok, data} ->
+        csv_to_db(data)
+        :ok
 
-  def csv_to_db(data), do: ReviewQueries.csv_to_db(data)
+      :error ->
+        :error
+    end
+  end
+
+  def change_review(), do: ReviewQueries.change_review()
+
+  def change_review(review, attrs),
+    do: ReviewQueries.change_review(review, attrs)
+
+  def create_review(attrs), do: ReviewQueries.create_review(attrs)
+
+  defp prepare_csv_to_db(filename), do: CsvLoader.prepare_csv_to_db(filename)
+
+  defp csv_to_db(data), do: ReviewQueries.csv_to_db(data)
 end

@@ -3,7 +3,6 @@ defmodule FeedbackCsv.Reviews.Review do
   import Ecto.Changeset
   alias FeedbackCsv.Reviews.Author
   alias FeedbackCsv.Reviews.Review
-  alias FeedbackCsv.Repo
 
   schema "review" do
     field :body, :string
@@ -18,6 +17,6 @@ defmodule FeedbackCsv.Reviews.Review do
     review
     |> cast(attrs, [:body, :city])
     |> validate_required([:body, :city])
-    |> cast_assoc(:author, required: true, with: &Author.changeset/2)
+    |> cast_assoc(:author, required: true)
   end
 end

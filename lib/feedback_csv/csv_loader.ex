@@ -37,9 +37,9 @@ defmodule FeedbackCsv.CsvLoader do
   # Готовим данные для загрузки в БД
   defp prepare_to_db(data) do
     try do
-      IO.inspect({:ok, Enum.map(data, &get_author_and_review/1)})
+      {:ok, Enum.map(data, &get_author_and_review/1)}
     rescue
-      e in FunctionClauseError -> :error
+      _ in FunctionClauseError -> :error
     end
   end
 
