@@ -14,7 +14,7 @@ defmodule FeedbackCsv.ReviewQueries do
     |> Repo.preload(:author)
   end
 
-  # Получаем структуры Отзыва и Автора
+  # Получает структуры Отзыва и Автора
   defp put_author_and_review(map) do
     author_map = map.author
     review_map = map.review
@@ -23,11 +23,13 @@ defmodule FeedbackCsv.ReviewQueries do
     create_review(review_map)
   end
 
+  # Создает отзыв в БД
   def create_review(attrs) do
     %Review{}
     |> change_review(attrs)
     |> Repo.insert()
   end
 
+  # Возвращает Review changeset
   def change_review(review \\ %Review{}, attrs \\ %{}), do: Review.changeset(review, attrs)
 end

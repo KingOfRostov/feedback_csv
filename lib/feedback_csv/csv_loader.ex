@@ -1,5 +1,5 @@
 defmodule FeedbackCsv.CsvLoader do
-  # Загружает данные из .csv файла в БД
+  # Готовит данные из .csv файла для загрузки в БД
   def prepare_csv_to_db(filename) do
     filename
     |> load_csv

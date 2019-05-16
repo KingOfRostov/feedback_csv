@@ -4,6 +4,7 @@ defmodule FeedbackCsv.Reviews do
 
   def list_review(), do: ReviewQueries.list_review()
 
+  # Загружает данные из .csv файла в БД
   def load_from_csv(filename) do
     case prepare_csv_to_db(filename) do
       {:ok, data} ->
@@ -15,14 +16,18 @@ defmodule FeedbackCsv.Reviews do
     end
   end
 
-  def change_review(), do: ReviewQueries.change_review()
-
+  # Возвращает changeset 
   def change_review(review, attrs),
     do: ReviewQueries.change_review(review, attrs)
 
+  def change_review(), do: ReviewQueries.change_review()
+
+  # Создает отзыв в БД
   def create_review(attrs), do: ReviewQueries.create_review(attrs)
 
+  # Готовит данные из .csv файла для загрузки в БД
   defp prepare_csv_to_db(filename), do: CsvLoader.prepare_csv_to_db(filename)
 
+  # Загружает данные в БД
   defp csv_to_db(data), do: ReviewQueries.csv_to_db(data)
 end
