@@ -4,8 +4,18 @@ defmodule FeedbackCsvWeb.ReviewsTest do
   alias FeedbackCsv.Reviews
   alias FeedbackCsv.Reviews.Review
 
-  @valid_attrs %{body: "Cool!", city: "New-York", author: %{name: "Steve", sex: "Male"}}
-  @invalid_attrs %{body: "Cool!", city: "New-York", author: %{name: "Steve"}}
+  @valid_attrs %{
+    body: "Cool!",
+    city: "New-York",
+    date_time: DateTime.from_unix!(1494719407),
+    author: %{name: "Steve", sex: "Male"}
+  }
+  @invalid_attrs %{
+    body: "Cool!",
+    city: "New-York",
+    date_time: DateTime.from_unix!(1494719407),
+    author: %{name: "Steve"}
+  }
 
   test "change_review/2 returns can't be blank" do
     changeset = Reviews.change_review(%Review{}, @invalid_attrs)
@@ -25,6 +35,7 @@ defmodule FeedbackCsvWeb.ReviewsTest do
 
   test "create_review/1 with valid data creates a review" do
     assert {:ok, review} = Reviews.create_review(@valid_attrs)
+    assert review.date_time == DateTime.from_unix!(1494719407)
     assert review.body == "Cool!"
     assert review.city == "New-York"
     assert review.author.name == "Steve"

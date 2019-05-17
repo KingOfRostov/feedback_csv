@@ -2,33 +2,21 @@ defmodule FeedbackCsvWeb.CsvLoaderTest do
   use FeedbackCsv.DataCase
   alias FeedbackCsv.CsvLoader
 
-  def create_test_csv() do
-    csv =
-      CSV.encode([
-        ~w(Имя Пол Город Текст Дата),
-        ["Олег", "Мужской", "Ростов-на-Дону", "Мне очень понравилось", "07.09.1998"]
-      ])
-      |> Enum.take(2)
-
-    File.write("media/t.csv", csv)
-  end
+  @valid_data %{
+    author: %{name: "Steve", sex: "male"},
+    review: %{
+      date_time: DateTime.from_unix!(1486035766),
+      body:
+        "My girlfriend is always stealing my t-shirts and sweaters but if I take one of her dresses suddenly we need to talk.",
+      city: "New-York"
+    }
+  }
 
   test "prepare_csv_to_db/1" do
-    create_test_csv()
-    filename = "media/t.csv"
-    data = CsvLoader.prepare_csv_to_db(filename)
-    File.rm(filename)
-
-    assert data ==
-             {:ok,
-              [
-                %{
-                  author: %{name: "Олег", sex: "Мужской"},
-                  review: %{
-                    body: "Мне очень понравилось",
-                    city: "Ростов-на-Дону"
-                  }
-                }
-              ]}
+    filename = "test/tmp/data.csv"
+    {status, data} = CsvLoader.prepare_csv_to_db(filename)
+    
+    assert status == :ok
+    assert Enum.find(data, &(&1 == @valid_data)) != nil
   end
 end

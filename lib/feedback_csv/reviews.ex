@@ -6,9 +6,9 @@ defmodule FeedbackCsv.Reviews do
 
   # Загружает данные из .csv файла в БД
   def load_from_csv(filename) do
-    case prepare_csv_to_db(filename) do
+    case CsvLoader.prepare_csv_to_db(filename) do
       {:ok, data} ->
-        csv_to_db(data)
+        ReviewQueries.csv_to_db(data)
         :ok
 
       :error ->
@@ -24,10 +24,4 @@ defmodule FeedbackCsv.Reviews do
 
   # Создает отзыв в БД
   def create_review(attrs), do: ReviewQueries.create_review(attrs)
-
-  # Готовит данные из .csv файла для загрузки в БД
-  defp prepare_csv_to_db(filename), do: CsvLoader.prepare_csv_to_db(filename)
-
-  # Загружает данные в БД
-  defp csv_to_db(data), do: ReviewQueries.csv_to_db(data)
 end

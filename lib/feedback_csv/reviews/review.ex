@@ -7,6 +7,7 @@ defmodule FeedbackCsv.Reviews.Review do
   schema "review" do
     field :body, :string
     field :city, :string
+    field :date_time, :utc_datetime
 
     belongs_to :author, Author
 
@@ -15,8 +16,8 @@ defmodule FeedbackCsv.Reviews.Review do
 
   def changeset(%Review{} = review, attrs) do
     review
-    |> cast(attrs, [:body, :city])
-    |> validate_required([:body, :city])
+    |> cast(attrs, [:body, :city, :date_time])
+    |> validate_required([:body, :city, :date_time])
     |> cast_assoc(:author, required: true)
   end
 end

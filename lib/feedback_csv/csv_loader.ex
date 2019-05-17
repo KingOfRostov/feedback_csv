@@ -18,7 +18,7 @@ defmodule FeedbackCsv.CsvLoader do
     filename
     |> Path.expand()
     |> File.stream!()
-    |> CSV.decode(headers: true, strip_fields: true)
+    |> CSV.decode(headers: true, strip_fields: true, separator: ?;)
   end
 
   # Получаем список мапов
@@ -54,13 +54,23 @@ defmodule FeedbackCsv.CsvLoader do
   defp get_review(map) do
     city = get_city(map)
     body = get_body(map)
-    %{body: body, city: city}
+    date_time = get_date_time(map)
+    %{body: body, city: city, date_time: date_time}
   end
 
   # Получаем город Отзыва
   defp get_city(map) do
     data = map["Город"] || map["город"]
     String.trim(data)
+  end
+
+  # Получаем дату Отзыва
+  defp get_date_time(map) do
+    data = map["Дата"] || map["дата"]
+    data
+    |> String.trim()
+    |> String.to_integer()
+    |> DateTime.from_unix!()
   end
 
   # Получаем текст Отзыва
