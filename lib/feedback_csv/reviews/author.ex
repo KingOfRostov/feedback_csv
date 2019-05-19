@@ -4,6 +4,8 @@ defmodule FeedbackCsv.Reviews.Author do
   alias FeedbackCsv.Reviews.Author
   alias FeedbackCsv.Reviews.Review
 
+  @required [:name, :sex]
+
   schema "authors" do
     field :name, :string
     field :sex, :string
@@ -13,7 +15,7 @@ defmodule FeedbackCsv.Reviews.Author do
 
   def changeset(%Author{} = author, attrs) do
     author
-    |> cast(attrs, [:name, :sex])
-    |> validate_required([:name, :sex])
+    |> cast(attrs, @required)
+    |> validate_required(@required)
   end
 end

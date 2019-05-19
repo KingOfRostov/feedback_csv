@@ -7,13 +7,19 @@ defmodule FeedbackCsvWeb.ReviewsTest do
   @valid_attrs %{
     body: "Cool!",
     city: "New-York",
-    date_time: DateTime.from_unix!(1494719407),
+    date_time:
+      1_494_719_407
+      |> DateTime.from_unix()
+      |> Kernel.elem(1),
     author: %{name: "Steve", sex: "Male"}
   }
   @invalid_attrs %{
     body: "Cool!",
     city: "New-York",
-    date_time: DateTime.from_unix!(1494719407),
+    date_time:
+      1_494_719_407
+      |> DateTime.from_unix()
+      |> Kernel.elem(1),
     author: %{name: "Steve"}
   }
 
@@ -35,7 +41,7 @@ defmodule FeedbackCsvWeb.ReviewsTest do
 
   test "create_review/1 with valid data creates a review" do
     assert {:ok, review} = Reviews.create_review(@valid_attrs)
-    assert review.date_time == DateTime.from_unix!(1494719407)
+    assert review.date_time == DateTime.from_unix!(1_494_719_407)
     assert review.body == "Cool!"
     assert review.city == "New-York"
     assert review.author.name == "Steve"

@@ -67,10 +67,12 @@ defmodule FeedbackCsv.CsvLoader do
   # Получаем дату Отзыва
   defp get_date_time(map) do
     data = map["Дата"] || map["дата"]
+
     data
     |> String.trim()
     |> String.to_integer()
-    |> DateTime.from_unix!()
+    |> DateTime.from_unix()
+    |> Kernel.elem(1)
   end
 
   # Получаем текст Отзыва
