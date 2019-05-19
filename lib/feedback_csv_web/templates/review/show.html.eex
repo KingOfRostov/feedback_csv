@@ -1,0 +1,16 @@
+<div class="container">
+    <h1><%= Kernel.length(@reviews) %></h1>
+    <%= for review <- @reviews do %>
+        <div class="row">
+            <div class="col-lg-3 mx-auto">
+                <h1><%= review.city %> </h1>
+                <table>
+                    <tr>
+                        <td><%= review.id %></td>
+                        <td><%= review.body %> </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    <% end %>
+</div>

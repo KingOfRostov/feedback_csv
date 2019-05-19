@@ -1,0 +1,41 @@
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto text-center">
+            <%= form_for @changeset, Routes.review_path(@conn, :create), [multipart: true], fn f -> %>
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class=text-center>Отзывов в базе данных: <%= Kernel.length @reviews %> </h1> 
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <%= file_input f, :csv, class: "btn btn-light btn-lg" %>
+                            <%= submit "Добавить отзывы в БД", class: "btn btn-secondary" %>
+                        </div>
+                    </div>
+                </div>
+            <% end %>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto text-center">
+            <%= form_for @changeset, Routes.review_path(@conn, :show), [method: "get"], fn f -> %>
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <h1 class=text-center>Отчет по загруженным отзывам </h1> 
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <h4>
+                                <%= select f, :sort_param, ["---Критерии классификации---","Пол автора", "Город", "Эмоциональный окрас пользователя"], class: "btn btn-light btn-lg" %>
+                                <%= select f, :show_form, ["---Форма отчета---","HTML-страница", "Excel-файл"], class: "btn btn-light btn-lg pr-5" %>
+                                <%= submit "Сформировать отчет", class: "btn btn-secondary" %>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            <% end %>
+        </div>
+    </div>
+
+</div>
