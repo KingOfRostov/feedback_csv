@@ -78,6 +78,14 @@ defmodule FeedbackCsvWeb.ReviewController do
         "Город" ->
           cities = Enum.group_by(reviews, &String.upcase(&1.city))
           render(conn, "show_city.html", %{reviews: reviews, cities: cities})
+
+        "Месяц, когда был получен отзыв" ->
+          months = Enum.group_by(reviews, &Reviews.get_month(&1.date_time.month))
+          render(conn, "show_month.html", %{reviews: reviews, months: months})
+
+        "Время суток, когда был получен отзыв" ->
+          times = Enum.group_by(reviews, &Reviews.get_time(&1.date_time.hour))
+          render(conn, "show_time.html", %{reviews: reviews, times: times})
       end
     else
       render(conn, "excel.html")
