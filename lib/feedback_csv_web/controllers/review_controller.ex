@@ -1,6 +1,7 @@
 defmodule FeedbackCsvWeb.ReviewController do
   use FeedbackCsvWeb, :controller
 
+  alias FeedbackCsv.Reviews.Author
   alias FeedbackCsv.Reviews.Review
   alias FeedbackCsv.Reviews
   alias FeedbackCsv.Repo
@@ -61,13 +62,23 @@ defmodule FeedbackCsvWeb.ReviewController do
 
   def show(conn, %{"review" => review_params}) do
     sort_param = review_params["sort_param"]
-    reviews = Reviews.list_review()
     show_form = review_params["show_form"]
-
-    query = Repo.all(from r in Review, where: r.city == "Ростов-на-Дону", select: r.body)
+    reviews = Reviews.list_review()
 
     if show_form == "HTML-страница" or show_form == "---Форма отчета---" do
-      render(conn, "show.html", %{reviews: reviews, sort_param: sort_param, query: query})
+      case sort_param do
+        "---Критерии классификации---" ->
+          sex = Enum.group_by(reviews, &String.upcase(&1.author.sex))
+          render(conn, "show_sex.html", %{reviews: reviews, genders: sex})
+
+        "Пол автора" ->
+          sex = Enum.group_by(reviews, &String.upcase(&1.author.sex))
+          render(conn, "show_sex.html", %{reviews: reviews, genders: sex})
+
+        "Город" ->
+          cities = Enum.group_by(reviews, &String.upcase(&1.city))
+          render(conn, "show_city.html", %{reviews: reviews, cities: cities})
+      end
     else
       render(conn, "excel.html")
     end
