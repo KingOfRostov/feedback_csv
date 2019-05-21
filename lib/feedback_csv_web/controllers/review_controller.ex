@@ -1,12 +1,7 @@
 defmodule FeedbackCsvWeb.ReviewController do
   use FeedbackCsvWeb, :controller
 
-  alias FeedbackCsv.Reviews.Author
-  alias FeedbackCsv.Reviews.Review
   alias FeedbackCsv.Reviews
-  alias FeedbackCsv.Repo
-
-  import Ecto.Query, only: [from: 2]
 
   def index(conn, _params) do
     reviews = Reviews.list_review()
@@ -69,23 +64,23 @@ defmodule FeedbackCsvWeb.ReviewController do
       case sort_param do
         "---Критерии классификации---" ->
           sex = Enum.group_by(reviews, &String.upcase(&1.author.sex))
-          render(conn, "show_sex.html", %{reviews: reviews, genders: sex})
+          render(conn, "show.html", %{reviews: reviews, params: sex})
 
         "Пол автора" ->
           sex = Enum.group_by(reviews, &String.upcase(&1.author.sex))
-          render(conn, "show_sex.html", %{reviews: reviews, genders: sex})
+          render(conn, "show.html", %{reviews: reviews, params: sex})
 
         "Город" ->
           cities = Enum.group_by(reviews, &String.upcase(&1.city))
-          render(conn, "show_city.html", %{reviews: reviews, cities: cities})
+          render(conn, "show.html", %{reviews: reviews, params: cities})
 
         "Месяц, когда был получен отзыв" ->
           months = Enum.group_by(reviews, &Reviews.get_month(&1.date_time.month))
-          render(conn, "show_month.html", %{reviews: reviews, months: months})
+          render(conn, "show.html", %{reviews: reviews, params: months})
 
         "Время суток, когда был получен отзыв" ->
           times = Enum.group_by(reviews, &Reviews.get_time(&1.date_time.hour))
-          render(conn, "show_time.html", %{reviews: reviews, times: times})
+          render(conn, "show.html", %{reviews: reviews, params: times})
       end
     else
       render(conn, "excel.html")

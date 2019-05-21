@@ -1,9 +1,9 @@
 <div class="container">
 
-    <%= for time <- Map.keys @times do %>
-        <h1> <%= time %> ( <%= Kernel.length @times[time] %> )</h1>
+    <%= for param <- Map.keys @params do %>
+        <h1> <%= param %> ( <%= Kernel.length @params[param] %> )</h1>
         <table>
-            <%= for review <- @times[time] do %>
+            <%= for review <- @params[param] do %>
                     <tr>
                         <td><%= review.author.name %></td>
                         <td><%= review.body %></td>
