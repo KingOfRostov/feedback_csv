@@ -4,6 +4,13 @@ defmodule FeedbackCsv.Reviews do
 
   def list_review(), do: ReviewQueries.list_review()
 
+  @url "https://apis.paralleldots.com/v4/emotion"
+  @api_key "PTEazLkKberIZlwBBBykxww77Bn9z6dxUMJAJL7AOeQ"
+  def get_emotion(text) do
+    body = Jason.encode(%{"text" => text, "api_key" => @api_key}) |> Kernel.elem(1)
+    HTTPoison.post(@url, body)
+  end
+
   # Загружает данные из .csv файла в БД
   def load_from_csv(filename) do
     case CsvLoader.prepare_csv_to_db(filename) do
