@@ -81,6 +81,10 @@ defmodule FeedbackCsvWeb.ReviewController do
         "Время суток, когда был получен отзыв" ->
           times = Enum.group_by(reviews, &Reviews.get_time(&1.date_time.hour))
           render(conn, "show.html", %{reviews: reviews, params: times})
+
+        "Эмоциональный окрас пользователя" ->
+          emotions = Enum.group_by(reviews, &Reviews.format_emotion(&1.emotion))
+          render(conn, "show.html", %{reviews: reviews, params: emotions})
       end
     else
       render(conn, "excel.html")

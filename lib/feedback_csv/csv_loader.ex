@@ -1,4 +1,6 @@
 defmodule FeedbackCsv.CsvLoader do
+  alias FeedbackCsv.Emotions
+
   # Готовит данные из .csv файла для загрузки в БД
   def prepare_csv_to_db(filename) do
     filename
@@ -55,7 +57,9 @@ defmodule FeedbackCsv.CsvLoader do
     city = get_city(map)
     body = get_body(map)
     date_time = get_date_time(map)
-    %{body: body, city: city, date_time: date_time}
+    emotion = get_emotion(body)
+
+    %{body: body, city: city, date_time: date_time, emotion: emotion}
   end
 
   # Получаем город Отзыва
@@ -79,6 +83,11 @@ defmodule FeedbackCsv.CsvLoader do
   defp get_body(map) do
     data = map["Текст"] || map["текст"]
     String.trim(data)
+  end
+
+  # Получает эмоциональный окрас первых 20 записей
+  defp get_emotion(text) do
+    Emotions.get_emotions(text)
   end
 
   # Получаем поля Автора

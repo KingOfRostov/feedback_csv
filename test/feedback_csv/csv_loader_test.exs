@@ -11,7 +11,8 @@ defmodule FeedbackCsvWeb.CsvLoaderTest do
         |> Kernel.elem(1),
       body:
         "My girlfriend is always stealing my t-shirts and sweaters but if I take one of her dresses suddenly we need to talk.",
-      city: "New-York"
+      city: "New-York",
+      emotion: "Angry"
     }
   }
 
