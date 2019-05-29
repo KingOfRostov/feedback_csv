@@ -18,7 +18,7 @@ defmodule FeedbackCsvWeb.CsvLoaderTest do
 
   test "prepare_csv_to_db/1" do
     filename = "test/tmp/data.csv"
-    assert {:ok, data} = CsvLoader.prepare_csv_to_db(filename)
+    assert {:ok, data} = CsvLoader.prepare_csv_to_db(filename, :test)
 
     assert Enum.find(data, &(&1 == @valid_data)) != nil
   end

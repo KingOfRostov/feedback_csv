@@ -2,10 +2,20 @@ defmodule FeedbackCsv.Reviews do
   alias FeedbackCsv.CsvLoader
   alias FeedbackCsv.ReviewQueries
   alias FeedbackCsv.Emotions
+
   def list_review(), do: ReviewQueries.list_review()
 
+  # Получает эмоциональный окрас отзыва
   def get_emotion(list_text) do
     Emotions.get_emotions(list_text)
+  end
+
+  # Форматирует эмоциональный окрас отзыва из БД
+  def format_emotion(emotion) do
+    case emotion do
+      nil -> "UNKNOWN"
+      _ -> String.upcase(emotion)
+    end
   end
 
   # Загружает данные из .csv файла в БД
@@ -54,13 +64,6 @@ defmodule FeedbackCsv.Reviews do
       Enum.find(12..17, &(&1 == number)) != nil -> "ДЕНЬ"
       Enum.find(18..23, &(&1 == number)) != nil -> "ВЕЧЕР"
       Enum.find([24, 0, 1, 2, 3, 4], &(&1 == number)) != nil -> "НОЧЬ"
-    end
-  end
-
-  def format_emotion(emotion) do
-    case emotion do
-      nil -> "UNKNOWN"
-      _ -> String.upcase(emotion)
     end
   end
 end

@@ -60,34 +60,31 @@ defmodule FeedbackCsvWeb.ReviewController do
     show_form = review_params["show_form"]
     reviews = Reviews.list_review()
 
-    if show_form == "HTML-страница" or show_form == "---Форма отчета---" do
+    params =
       case sort_param do
         "---Критерии классификации---" ->
-          sex = Enum.group_by(reviews, &String.upcase(&1.author.sex))
-          render(conn, "show.html", %{reviews: reviews, params: sex})
+          Enum.group_by(reviews, &String.upcase(&1.author.sex))
 
         "Пол автора" ->
-          sex = Enum.group_by(reviews, &String.upcase(&1.author.sex))
-          render(conn, "show.html", %{reviews: reviews, params: sex})
+          Enum.group_by(reviews, &String.upcase(&1.author.sex))
 
         "Город" ->
-          cities = Enum.group_by(reviews, &String.upcase(&1.city))
-          render(conn, "show.html", %{reviews: reviews, params: cities})
+          Enum.group_by(reviews, &String.upcase(&1.city))
 
         "Месяц, когда был получен отзыв" ->
-          months = Enum.group_by(reviews, &Reviews.get_month(&1.date_time.month))
-          render(conn, "show.html", %{reviews: reviews, params: months})
+          Enum.group_by(reviews, &Reviews.get_month(&1.date_time.month))
 
         "Время суток, когда был получен отзыв" ->
-          times = Enum.group_by(reviews, &Reviews.get_time(&1.date_time.hour))
-          render(conn, "show.html", %{reviews: reviews, params: times})
+          Enum.group_by(reviews, &Reviews.get_time(&1.date_time.hour))
 
         "Эмоциональный окрас пользователя" ->
-          emotions = Enum.group_by(reviews, &Reviews.format_emotion(&1.emotion))
-          render(conn, "show.html", %{reviews: reviews, params: emotions})
+          Enum.group_by(reviews, &Reviews.format_emotion(&1.emotion))
       end
+
+    if show_form == "HTML-страница" or show_form == "---Форма отчета---" do
+      render(conn, "show.html", %{reviews: reviews, params: params})
     else
-      render(conn, "excel.html")
+      render(conn, "index.html")
     end
   end
 end
