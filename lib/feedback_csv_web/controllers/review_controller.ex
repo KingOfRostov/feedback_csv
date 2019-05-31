@@ -89,11 +89,16 @@ defmodule FeedbackCsvWeb.ReviewController do
       # Генерируем имя для файла
       formated_time = String.replace(to_string(time), " ", "_")
       filename = "./media/report_#{formated_time}.xls"
-      Reviews.gen_excel_report(params, filename)
 
-      conn
-      |> send_download({:file, filename})
-      |> render("index.html", %{reviews: reviews, changeset: changeset})
+      case Reviews.gen_excel_report(params, filename) do
+        {:ok, filename} ->
+          conn
+          |> send_download({:file, filename})
+          |> render("index.html", %{reviews: reviews, changeset: changeset})
+
+        :error ->
+          render(conn, "index.html", %{reviews: reviews, changeset: changeset})
+      end
     end
   end
 end

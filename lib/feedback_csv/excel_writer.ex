@@ -4,9 +4,15 @@ defmodule FeedbackCsv.ExcelWriter do
 
   # Генерирует Эксель отчет
   def gen_excel_report(map, filename) do
-    map
-    |> gen_workbook()
-    |> Elixlsx.write_to(filename)
+    try do
+      map
+      |> gen_workbook()
+      |> Elixlsx.write_to(filename)
+
+      {:ok, filename}
+    rescue
+      _ in _ -> :error
+    end
   end
 
   # Генерирует Эксель файл.
