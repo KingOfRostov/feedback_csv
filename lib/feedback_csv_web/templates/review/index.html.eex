@@ -27,7 +27,7 @@
                     <div class="card-body">
                         <div class="form-group">
                             <h4>
-                                <%= select f, :sort_param, ["---Критерии классификации---","Пол автора", "Город", "Эмоциональный окрас пользователя"], class: "btn btn-light btn-lg" %>
+                                <%= select f, :sort_param, ["---Критерии классификации---","Пол автора", "Город", "Эмоциональный окрас пользователя", "Месяц, когда был получен отзыв", "Время суток, когда был получен отзыв"], class: "btn btn-light btn-lg" %>
                                 <%= select f, :show_form, ["---Форма отчета---","HTML-страница", "Excel-файл"], class: "btn btn-light btn-lg pr-5" %>
                                 <%= submit "Сформировать отчет", class: "btn btn-secondary" %>
                             </h4>

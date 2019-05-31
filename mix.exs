@@ -43,7 +43,10 @@ defmodule FeedbackCsv.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:csv, "~> 2.3.1"}
+      {:csv, "~> 2.3.1"},
+      {:httpoison, "~> 1.5.1"},
+      {:poison, "~> 4.0.1"},
+      {:elixlsx, "~> 0.4.1"}
     ]
   end
 

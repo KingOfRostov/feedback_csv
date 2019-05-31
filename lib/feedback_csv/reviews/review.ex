@@ -5,11 +5,13 @@ defmodule FeedbackCsv.Reviews.Review do
   alias FeedbackCsv.Reviews.Review
 
   @required [:body, :city, :date_time]
+  @optional [:emotion]
 
   schema "review" do
     field :body, :string
     field :city, :string
     field :date_time, :utc_datetime
+    field :emotion, :string, null: true
 
     belongs_to :author, Author
 
@@ -18,7 +20,7 @@ defmodule FeedbackCsv.Reviews.Review do
 
   def changeset(%Review{} = review, attrs) do
     review
-    |> cast(attrs, @required)
+    |> cast(attrs, @required ++ @optional)
     |> validate_required(@required)
     |> cast_assoc(:author, required: true)
   end

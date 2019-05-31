@@ -11,7 +11,8 @@ defmodule FeedbackCsvWeb.ReviewsTest do
       1_494_719_407
       |> DateTime.from_unix()
       |> Kernel.elem(1),
-    author: %{name: "Steve", sex: "Male"}
+    author: %{name: "Steve", sex: "Male"},
+    emotion: "Happy"
   }
   @invalid_attrs %{
     body: "Cool!",
@@ -20,7 +21,8 @@ defmodule FeedbackCsvWeb.ReviewsTest do
       1_494_719_407
       |> DateTime.from_unix()
       |> Kernel.elem(1),
-    author: %{name: "Steve"}
+    author: %{name: "Steve"},
+    emotion: "Happy"
   }
 
   test "change_review/2 returns can't be blank" do

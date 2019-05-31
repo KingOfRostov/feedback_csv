@@ -1,11 +1,7 @@
 defmodule FeedbackCsvWeb.ReviewController do
   use FeedbackCsvWeb, :controller
 
-  alias FeedbackCsv.Reviews.Review
   alias FeedbackCsv.Reviews
-  alias FeedbackCsv.Repo
-
-  import Ecto.Query, only: [from: 2]
 
   def index(conn, _params) do
     reviews = Reviews.list_review()
@@ -61,15 +57,35 @@ defmodule FeedbackCsvWeb.ReviewController do
 
   def show(conn, %{"review" => review_params}) do
     sort_param = review_params["sort_param"]
-    reviews = Reviews.list_review()
     show_form = review_params["show_form"]
+    reviews = Reviews.list_review()
+    changeset = Reviews.change_review()
 
-    query = Repo.all(from r in Review, where: r.city == "Ростов-на-Дону", select: r.body)
+    params =
+      case sort_param do
+        "---Критерии классификации---" ->
+          Enum.group_by(reviews, &String.upcase(&1.author.sex))
+
+        "Пол автора" ->
+          Enum.group_by(reviews, &String.upcase(&1.author.sex))
+
+        "Город" ->
+          Enum.group_by(reviews, &String.upcase(&1.city))
+
+        "Месяц, когда был получен отзыв" ->
+          Enum.group_by(reviews, &Reviews.get_month(&1.date_time.month))
+
+        "Время суток, когда был получен отзыв" ->
+          Enum.group_by(reviews, &Reviews.get_time(&1.date_time.hour))
+
+        "Эмоциональный окрас пользователя" ->
+          Enum.group_by(reviews, &Reviews.format_emotion(&1.emotion))
+      end
 
     if show_form == "HTML-страница" or show_form == "---Форма отчета---" do
-      render(conn, "show.html", %{reviews: reviews, sort_param: sort_param, query: query})
+      render(conn, "show.html", %{reviews: reviews, params: params})
     else
-      render(conn, "excel.html")
+      render(conn, "index.html", %{reviews: reviews, changeset: changeset})
     end
   end
 end
