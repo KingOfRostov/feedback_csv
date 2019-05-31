@@ -85,7 +85,15 @@ defmodule FeedbackCsvWeb.ReviewController do
     if show_form == "HTML-страница" or show_form == "---Форма отчета---" do
       render(conn, "show.html", %{reviews: reviews, params: params})
     else
-      render(conn, "index.html", %{reviews: reviews, changeset: changeset})
+      {:ok, time} = DateTime.now("Etc/UTC")
+      # Генерируем имя для файла
+      formated_time = String.replace(to_string(time), " ", "_")
+      filename = "./media/report_#{formated_time}.xls"
+      Reviews.gen_excel_report(params, filename)
+
+      conn
+      |> send_download({:file, filename})
+      |> render("index.html", %{reviews: reviews, changeset: changeset})
     end
   end
 end
