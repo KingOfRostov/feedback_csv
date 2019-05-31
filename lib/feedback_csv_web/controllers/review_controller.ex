@@ -59,6 +59,7 @@ defmodule FeedbackCsvWeb.ReviewController do
     sort_param = review_params["sort_param"]
     show_form = review_params["show_form"]
     reviews = Reviews.list_review()
+    changeset = Reviews.change_review()
 
     params =
       case sort_param do
@@ -84,7 +85,7 @@ defmodule FeedbackCsvWeb.ReviewController do
     if show_form == "HTML-страница" or show_form == "---Форма отчета---" do
       render(conn, "show.html", %{reviews: reviews, params: params})
     else
-      render(conn, "index.html")
+      render(conn, "index.html", %{reviews: reviews, changeset: changeset})
     end
   end
 end
