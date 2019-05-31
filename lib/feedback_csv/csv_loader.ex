@@ -1,12 +1,6 @@
 defmodule FeedbackCsv.CsvLoader do
   alias FeedbackCsv.Emotions
 
-  def prepare_csv_to_db(filename, :test) do
-    filename
-    |> load_csv
-    |> prepare_to_db(:test)
-  end
-
   # Готовит данные из .csv файла для загрузки в БД
   def prepare_csv_to_db(filename) do
     filename
@@ -51,24 +45,10 @@ defmodule FeedbackCsv.CsvLoader do
     end
   end
 
-  defp prepare_to_db(data, :test) do
-    try do
-      {:ok, Enum.map(data, &get_author_and_review(&1, :test))}
-    rescue
-      _ in FunctionClauseError -> :error
-    end
-  end
-
   # Получаем структуры Отзыва и Автора
   defp get_author_and_review(map) do
     author_map = get_author(map)
     review_map = get_review(map)
-    %{author: author_map, review: review_map}
-  end
-
-  defp get_author_and_review(map, :test) do
-    author_map = get_author(map)
-    review_map = get_review(map, :test)
     %{author: author_map, review: review_map}
   end
 
@@ -78,15 +58,6 @@ defmodule FeedbackCsv.CsvLoader do
     body = get_body(map)
     date_time = get_date_time(map)
     emotion = Emotions.get_emotions(body)
-
-    %{body: body, city: city, date_time: date_time, emotion: emotion}
-  end
-
-  defp get_review(map, :test) do
-    city = get_city(map)
-    body = get_body(map)
-    date_time = get_date_time(map)
-    emotion = "Angry"
 
     %{body: body, city: city, date_time: date_time, emotion: emotion}
   end

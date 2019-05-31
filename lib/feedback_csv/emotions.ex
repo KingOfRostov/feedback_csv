@@ -3,6 +3,26 @@ defmodule FeedbackCsv.Emotions do
   @api_key "PTEazLkKberIZlwBBBykxww77Bn9z6dxUMJAJL7AOeQ"
 
   def get_emotions(text) do
+    get_emotions_by(text, Mix.env())
+  end
+
+  defp get_emotions_by(_text, :test) do
+    # ответ в формате, как возвращает сервис
+    body = %{
+      "emotion" => %{
+        "Angry" => 0.2389363461,
+        "Bored" => 0.117261253,
+        "Excited" => 0.046245546,
+        "Fear" => 0.0551760715,
+        "Happy" => 0.1886819022,
+        "Sad" => 0.1553198726
+      }
+    }
+
+    get_emotion(body["emotion"])
+  end
+
+  defp get_emotions_by(text, env) when env in [:dev, :prod, :staging] do
     body = {:form, [{:api_key, @api_key}, {:text, text}]}
 
     response =
