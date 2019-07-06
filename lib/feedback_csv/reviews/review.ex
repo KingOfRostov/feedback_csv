@@ -11,7 +11,7 @@ defmodule FeedbackCsv.Reviews.Review do
     field :body, :string
     field :city, :string
     field :date_time, :utc_datetime
-    field :emotion, :string, null: true
+    field :emotion, :string
 
     belongs_to :author, Author
 

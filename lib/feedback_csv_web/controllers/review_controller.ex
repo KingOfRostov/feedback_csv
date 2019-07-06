@@ -14,9 +14,6 @@ defmodule FeedbackCsvWeb.ReviewController do
     upload = review_params["csv"]
     extension = Path.extname(upload.filename)
 
-    changeset = Reviews.change_review()
-    reviews = Reviews.list_review()
-
     # Если загружен .csv файл - добавляем в ./media, иначе не добавляем 
     if(extension == ".csv") do
       {:ok, time} = DateTime.now("Etc/UTC")
@@ -29,37 +26,34 @@ defmodule FeedbackCsvWeb.ReviewController do
       # Загружаем данные из csv файла в БД, а затем удаляем файл
       case Reviews.load_from_csv(formated_name) do
         :ok ->
-          reviews = Reviews.list_review()
-
-          put_flash(conn, :info, "Данные успешно загружены")
-          |> render("index.html", %{reviews: reviews, changeset: changeset})
+          conn
+          |> put_flash(:info, "Данные успешно загружены")
+          |> redirect(to: Routes.review_path(conn, :index))
 
         :error ->
-          put_flash(conn, :error, "Некорректная структура csv файла")
-          |> render("index.html", %{reviews: reviews, changeset: changeset})
+          conn
+          |> put_flash(:error, "Некорректная структура csv файла")
+          |> redirect(to: Routes.review_path(conn, :index))
       end
 
       File.rm(formated_name)
     else
       put_flash(conn, :error, "Принимаются только .csv файлы")
-      |> render("index.html", %{reviews: reviews, changeset: changeset})
+      |> redirect(to: Routes.review_path(conn, :index))
     end
   end
 
   # Если не выбран файл
   def create(conn, _params) do
-    reviews = Reviews.list_review()
-    changeset = Reviews.change_review()
-
-    put_flash(conn, :error, "Выберите файл")
-    |> render("index.html", %{reviews: reviews, changeset: changeset})
+    conn
+    |> put_flash(:error, "Выберите файл")
+    |> redirect(to: Routes.review_path(conn, :index))
   end
 
   def show(conn, %{"review" => review_params}) do
     sort_param = review_params["sort_param"]
     show_form = review_params["show_form"]
     reviews = Reviews.list_review()
-    changeset = Reviews.change_review()
 
     params =
       case sort_param do
@@ -94,10 +88,11 @@ defmodule FeedbackCsvWeb.ReviewController do
         {:ok, filename} ->
           conn
           |> send_download({:file, filename})
-          |> render("index.html", %{reviews: reviews, changeset: changeset})
+          |> redirect(to: Routes.review_path(conn, :index))
 
         :error ->
-          render(conn, "index.html", %{reviews: reviews, changeset: changeset})
+          conn
+          |> redirect(to: Routes.review_path(conn, :index))
       end
     end
   end
