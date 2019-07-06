@@ -2,6 +2,32 @@ defmodule FeedbackCsv.Reviews do
   alias FeedbackCsv.CsvLoader
   alias FeedbackCsv.ReviewQueries
   alias FeedbackCsv.Emotions
+  alias FeedbackCsv.ExcelWriter
+
+  # Гененирует Эксель отчет
+  def gen_excel_report(map, filename) do
+    files = File.ls("media") |> Kernel.elem(1)
+    Enum.map(files, &check_to_delete/1)
+    ExcelWriter.gen_excel_report(map, filename)
+  end
+
+  # Удаляет все вчерашние файлы в /media
+  def check_to_delete(filename) do
+    stat = File.stat("media/#{filename}") |> Kernel.elem(1)
+    creation_day = Kernel.elem(stat.atime, 0) |> Kernel.elem(2)
+    today = Date.utc_today().day
+
+    cond do
+      today == 1 and creation_day != 1 ->
+        File.rm("media/#{filename}")
+
+      today > creation_day ->
+        File.rm("media/#{filename}")
+
+      true ->
+        nil
+    end
+  end
 
   def list_review(), do: ReviewQueries.list_review()
 
