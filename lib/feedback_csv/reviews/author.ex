@@ -5,8 +5,8 @@ defmodule FeedbackCsv.Reviews.Author do
   @required [:name, :sex]
 
   schema "authors" do
-    field :name, :string
-    field :sex, :string
+    field :name, :string, null: false
+    field :sex, :string, null: false
 
     has_many :reviews, Reviews.Review
   end

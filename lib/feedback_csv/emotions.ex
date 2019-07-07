@@ -46,6 +46,8 @@ defmodule FeedbackCsv.Emotions do
     get_emotion(body["emotion"])
   end
 
+  # Выбирает наиболее вероятную эмоцию по наибольшему значению
+  # Например: %{"Angry" => 0.2389363461, "Bored" => 0.117261253} будет Angry
   defp get_emotion(emotions) do
     try do
       emotions
