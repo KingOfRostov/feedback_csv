@@ -14,73 +14,47 @@ defmodule FeedbackCsvWeb.ReviewController do
     upload = review_params["csv"]
     extension = Path.extname(upload.filename)
 
-    changeset = Reviews.change_review()
-    reviews = Reviews.list_review()
-
     # Если загружен .csv файл - добавляем в ./media, иначе не добавляем 
-    if(extension == ".csv") do
-      {:ok, time} = DateTime.now("Etc/UTC")
-      # Генерируем имя для файла
-      formated_time = String.replace(to_string(time), " ", "_")
-      formated_name = "./media/#{formated_time}#{extension}"
-      # Переносим файлы в папку ./media
-      File.cp(upload.path, formated_name)
+    case extension do
+      ".csv" ->
+        formated_name = Reviews.generate_filename(extension)
+        # Переносим файлы в папку ./media
+        File.cp(upload.path, formated_name)
 
-      # Загружаем данные из csv файла в БД, а затем удаляем файл
-      case Reviews.load_from_csv(formated_name) do
-        :ok ->
-          reviews = Reviews.list_review()
+        # Загружаем данные из csv файла в БД, а затем удаляем файл
+        case Reviews.load_from_csv(formated_name) do
+          :ok ->
+            conn
+            |> put_flash(:info, "Данные успешно загружены")
+            |> redirect(to: Routes.review_path(conn, :index))
 
-          put_flash(conn, :info, "Данные успешно загружены")
-          |> render("index.html", %{reviews: reviews, changeset: changeset})
+          :error ->
+            conn
+            |> put_flash(:error, "Некорректная структура csv файла")
+            |> redirect(to: Routes.review_path(conn, :index))
+        end
 
-        :error ->
-          put_flash(conn, :error, "Некорректная структура csv файла")
-          |> render("index.html", %{reviews: reviews, changeset: changeset})
-      end
+        File.rm(formated_name)
 
-      File.rm(formated_name)
-    else
-      put_flash(conn, :error, "Принимаются только .csv файлы")
-      |> render("index.html", %{reviews: reviews, changeset: changeset})
+      _ ->
+        put_flash(conn, :error, "Принимаются только .csv файлы")
+        |> redirect(to: Routes.review_path(conn, :index))
     end
   end
 
   # Если не выбран файл
   def create(conn, _params) do
-    reviews = Reviews.list_review()
-    changeset = Reviews.change_review()
-
-    put_flash(conn, :error, "Выберите файл")
-    |> render("index.html", %{reviews: reviews, changeset: changeset})
+    conn
+    |> put_flash(:error, "Выберите файл")
+    |> redirect(to: Routes.review_path(conn, :index))
   end
 
   def show(conn, %{"review" => review_params}) do
     sort_param = review_params["sort_param"]
     show_form = review_params["show_form"]
     reviews = Reviews.list_review()
-    changeset = Reviews.change_review()
 
-    params =
-      case sort_param do
-        "---Критерии классификации---" ->
-          Enum.group_by(reviews, &String.upcase(&1.author.sex))
-
-        "Пол автора" ->
-          Enum.group_by(reviews, &String.upcase(&1.author.sex))
-
-        "Город" ->
-          Enum.group_by(reviews, &String.upcase(&1.city))
-
-        "Месяц, когда был получен отзыв" ->
-          Enum.group_by(reviews, &Reviews.get_month(&1.date_time.month))
-
-        "Время суток, когда был получен отзыв" ->
-          Enum.group_by(reviews, &Reviews.get_time(&1.date_time.hour))
-
-        "Эмоциональный окрас пользователя" ->
-          Enum.group_by(reviews, &Reviews.format_emotion(&1.emotion))
-      end
+    params = Reviews.get_params(reviews, sort_param)
 
     if show_form == "HTML-страница" or show_form == "---Форма отчета---" do
       render(conn, "show.html", %{reviews: reviews, params: params})
@@ -94,10 +68,11 @@ defmodule FeedbackCsvWeb.ReviewController do
         {:ok, filename} ->
           conn
           |> send_download({:file, filename})
-          |> render("index.html", %{reviews: reviews, changeset: changeset})
+          |> redirect(to: Routes.review_path(conn, :index))
 
         :error ->
-          render(conn, "index.html", %{reviews: reviews, changeset: changeset})
+          conn
+          |> redirect(to: Routes.review_path(conn, :index))
       end
     end
   end

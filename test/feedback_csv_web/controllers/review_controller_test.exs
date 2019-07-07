@@ -8,6 +8,6 @@ defmodule FeedbackCsvWeb.ReviewControllerTest do
 
   test "POST /reviews", %{conn: conn} do
     conn = post(conn, "/reviews")
-    assert html_response(conn, 200) =~ "Выберите файл"
+    assert redirected_to(conn) == Routes.review_path(conn, :index)
   end
 end

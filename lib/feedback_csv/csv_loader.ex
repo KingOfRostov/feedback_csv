@@ -1,11 +1,32 @@
 defmodule FeedbackCsv.CsvLoader do
   alias FeedbackCsv.Emotions
+  alias FeedbackCsv.Reviews.ReviewQueries
+
+  # Загружает данные из .csv файла в БД
+  def load_from_csv(filename) do
+    case prepare_csv_to_db(filename) do
+      {:ok, data} ->
+        ReviewQueries.csv_to_db(data)
+        :ok
+
+      :error ->
+        :error
+    end
+  end
 
   # Готовит данные из .csv файла для загрузки в БД
   def prepare_csv_to_db(filename) do
     filename
     |> load_csv
     |> prepare_to_db
+  end
+
+  # Генерирует имя файла
+  def generate_filename(extension) do
+    {:ok, time} = DateTime.now("Etc/UTC")
+    # Генерируем имя для файла
+    formated_time = String.replace(to_string(time), " ", "_")
+    "./media/#{formated_time}#{extension}"
   end
 
   # Читает и парсит .csv файл

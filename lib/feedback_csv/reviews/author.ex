@@ -1,19 +1,17 @@
 defmodule FeedbackCsv.Reviews.Author do
   use Ecto.Schema
   import Ecto.Changeset
-  alias FeedbackCsv.Reviews.Author
-  alias FeedbackCsv.Reviews.Review
-
+  alias FeedbackCsv.Reviews
   @required [:name, :sex]
 
   schema "authors" do
     field :name, :string
     field :sex, :string
 
-    has_many :reviews, Review
+    has_many :reviews, Reviews.Review
   end
 
-  def changeset(%Author{} = author, attrs) do
+  def changeset(%Reviews.Author{} = author, attrs) do
     author
     |> cast(attrs, @required)
     |> validate_required(@required)
