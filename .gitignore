@@ -41,4 +41,4 @@ npm-debug.log
 # variables.
 /config/*.secret.exs
 
-media/test\.csv
+media/*.csv

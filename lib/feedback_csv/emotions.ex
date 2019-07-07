@@ -2,6 +2,14 @@ defmodule FeedbackCsv.Emotions do
   @url "https://apis.paralleldots.com/v4/emotion"
   @api_key "PTEazLkKberIZlwBBBykxww77Bn9z6dxUMJAJL7AOeQ"
 
+  # Форматирует эмоциональный окрас отзыва из БД
+  def format_emotion(emotion) do
+    case emotion do
+      nil -> "UNKNOWN"
+      _ -> String.upcase(emotion)
+    end
+  end
+
   def get_emotions(text) do
     get_emotions_by(text, Mix.env())
   end

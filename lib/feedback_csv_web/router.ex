@@ -17,8 +17,7 @@ defmodule FeedbackCsvWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    get "/reviews", ReviewController, :index
-    post "/reviews", ReviewController, :create
+    resources "/reviews", ReviewController, only: [:index, :create]
     get "/reviews/html", ReviewController, :show
   end
 

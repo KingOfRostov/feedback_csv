@@ -1,6 +1,6 @@
 defmodule FeedbackCsv.Reviews do
   alias FeedbackCsv.CsvLoader
-  alias FeedbackCsv.ReviewQueries
+  alias FeedbackCsv.Reviews.ReviewQueries
   alias FeedbackCsv.Emotions
   alias FeedbackCsv.ExcelWriter
 
@@ -9,6 +9,31 @@ defmodule FeedbackCsv.Reviews do
     files = File.ls("media") |> Kernel.elem(1)
     Enum.map(files, &check_to_delete/1)
     ExcelWriter.gen_excel_report(map, filename)
+  end
+
+  # Генерирует имя файла
+  def generate_filename(extension), do: CsvLoader.generate_filename(extension)
+
+  def get_params(reviews, sort_param) do
+    case sort_param do
+      "---Критерии классификации---" ->
+        Enum.group_by(reviews, &String.upcase(&1.author.sex))
+
+      "Пол автора" ->
+        Enum.group_by(reviews, &String.upcase(&1.author.sex))
+
+      "Город" ->
+        Enum.group_by(reviews, &String.upcase(&1.city))
+
+      "Месяц, когда был получен отзыв" ->
+        Enum.group_by(reviews, &get_month(&1.date_time.month))
+
+      "Время суток, когда был получен отзыв" ->
+        Enum.group_by(reviews, &get_time(&1.date_time.hour))
+
+      "Эмоциональный окрас пользователя" ->
+        Enum.group_by(reviews, &Emotions.format_emotion(&1.emotion))
+    end
   end
 
   # Удаляет все вчерашние файлы в /media
@@ -32,29 +57,10 @@ defmodule FeedbackCsv.Reviews do
   def list_review(), do: ReviewQueries.list_review()
 
   # Получает эмоциональный окрас отзыва
-  def get_emotion(list_text) do
-    Emotions.get_emotions(list_text)
-  end
-
-  # Форматирует эмоциональный окрас отзыва из БД
-  def format_emotion(emotion) do
-    case emotion do
-      nil -> "UNKNOWN"
-      _ -> String.upcase(emotion)
-    end
-  end
+  def get_emotion(list_text), do: Emotions.get_emotions(list_text)
 
   # Загружает данные из .csv файла в БД
-  def load_from_csv(filename) do
-    case CsvLoader.prepare_csv_to_db(filename) do
-      {:ok, data} ->
-        ReviewQueries.csv_to_db(data)
-        :ok
-
-      :error ->
-        :error
-    end
-  end
+  def load_from_csv(filename), do: CsvLoader.load_from_csv(filename)
 
   # Возвращает changeset 
   def change_review(review, attrs),

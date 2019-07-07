@@ -1,4 +1,4 @@
-defmodule FeedbackCsv.ReviewQueries do
+defmodule FeedbackCsv.Reviews.ReviewQueries do
   alias FeedbackCsv.Repo
   alias FeedbackCsv.Reviews.Review
 
