@@ -8,9 +8,9 @@ defmodule FeedbackCsv.Reviews.Review do
   @optional [:emotion]
 
   schema "review" do
-    field :body, :string
-    field :city, :string
-    field :date_time, :utc_datetime
+    field :body, :string, null: false
+    field :city, :string, null: false
+    field :date_time, :utc_datetime, null: false
     field :emotion, :string
 
     belongs_to :author, Author
